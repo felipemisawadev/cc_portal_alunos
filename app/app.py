@@ -1,10 +1,29 @@
 import logging
-from flask import Flask, render_template, redirect
+from flask import Flask, render_template, redirect, request, session, url_for
+from flask_awscognito import AWSCognitoAuthentication
+from auth_wrapper import auth_required
+import constants as constants
+import secrets
 
 app = Flask(__name__)
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+app.secret_key = secrets.token_urlsafe(16)
+
+app.config["AWS_DEFAULT_REGION"] = constants.AWS_DEFAULT_REGION
+app.config["AWS_COGNITO_DOMAIN"] = constants.AWS_COGNITO_DOMAIN
+app.config["AWS_COGNITO_USER_POOL_ID"] = constants.AWS_COGNITO_USER_POOL_ID
+app.config[
+    "AWS_COGNITO_USER_POOL_CLIENT_ID"
+] = constants.AWS_COGNITO_USER_POOL_CLIENT_ID
+app.config[
+    "AWS_COGNITO_USER_POOL_CLIENT_SECRET"
+] = constants.AWS_COGNITO_USER_POOL_CLIENT_SECRET
+app.config["AWS_COGNITO_REDIRECT_URL"] = constants.AWS_COGNITO_REDIRECT_URL
+
+aws_auth = AWSCognitoAuthentication(app)
 
 
 @app.route("/")
@@ -13,11 +32,29 @@ def index(event=None, context=None):
     return render_template("index.html")
 
 
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    return redirect(
-        "https://cc-portal.auth.us-east-1.amazoncognito.com/login?client_id=7l99vut98tvvqp2v78icthncuv&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile&redirect_uri=https://www.google.com"
-    )
+@app.route("/sign_in")
+def sign_in():
+    return redirect(aws_auth.get_sign_in_url())
+
+
+@app.route("/logged_in")
+def logged_in():
+    access_token = aws_auth.get_access_token(request.args)
+    session["token"] = access_token
+    return redirect(url_for("landing_page"))
+
+
+@app.route("/landing_page")
+@auth_required
+def landing_page():
+    return "LOGGED IN MF"
+
+
+@app.route("/sign_out")
+@auth_required
+def sign_out():
+    session.pop("token", None)
+    return redirect(url_for("index"))
 
 
 # For local runs, set flask to use debug mode
