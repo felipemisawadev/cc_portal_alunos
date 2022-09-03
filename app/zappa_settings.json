@@ -1,0 +1,10 @@
+{
+    "dev": {
+        "app_function": "app.app",
+        "profile_name": "default",
+        "project_name": "cc-portal-aluno",
+        "runtime": "python3.9",
+        "s3_bucket": "zappa-3zx9i7kmz",
+        "aws_region": "us-east-1"
+    }
+}
