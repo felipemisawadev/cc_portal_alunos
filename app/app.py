@@ -41,13 +41,25 @@ def sign_in():
 def logged_in():
     access_token = aws_auth.get_access_token(request.args)
     session["token"] = access_token
-    return redirect(url_for("landing_page"))
+    return redirect(url_for("home"))
 
 
-@app.route("/landing_page")
+@app.route("/home")
 @auth_required
-def landing_page():
-    return "LOGGED IN MF"
+def home():
+    return render_template("home.html")
+
+
+@app.route("/profile")
+@auth_required
+def profile():
+    return "PROFILE PAGE"
+
+
+@app.route("/courses")
+@auth_required
+def courses():
+    return "COURSES PAGE"
 
 
 @app.route("/sign_out")

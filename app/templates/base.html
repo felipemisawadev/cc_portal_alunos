@@ -5,38 +5,122 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Auth Example</title>
+    <title>CC Portal Alunos</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
 </head>
 
 <body>
-    <section class="hero is-primary is-fullheight">
-
+    <section class="hero is-fullheight-with-navbar">
+        <!-- Hero head: will stick at the top -->
         <div class="hero-head">
-            <nav class="navbar">
-                <div class="container">
-                    <div id="navbarMenuHeroA" class="navbar-menu">
-                        <div class="navbar-end">
-                            <a href="{{ url_for('index') }}" class="navbar-item">
-                                Home
-                            </a>
-                            <a href="{{ url_for('sign_in') }}" class="navbar-item">
-                                Sign In
-                            </a>
-                            <a href="{{ url_for('sign_out') }}" class="navbar-item">
-                                Sign Out
-                            </a>
+            <div class="container">
+                <div class="columns is-centered">
+                    <div class="column is-four-fifths">
+                        <nav class="navbar is-spaced" role="navigation" aria-label="main navigation">
+                            <!-- LOGO -->
+                            <div class="navbar-brand">
+                                <a class="navbar-item" href="{{ url_for('index') }}">
+                                    <span class="has-text-grey-dark">LOGO HERE&trade;</span>
+                                </a>
+                            </div>
+                            <!-- LINKS -->
+                            <div id="navbarBasic" class="navbar-menu">
+                                <div class="navbar-end">
+                                    <!-- SIGN IN BUTTON -->
+                                    {% if not session.token %}
+                                    <div class="navbar-item">
+                                        <a class="button is-primary is-rounded" href="{{ url_for('sign_in') }}">
+                                            Sign In
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                    {% if session.token %}
+                                    <a href="{{ url_for('home') }}" class="navbar-item">
+                                        Home
+                                    </a>
+                                    <a href="{{ url_for('profile') }}" class="navbar-item">
+                                        Profile
+                                    </a>
+                                    <a href="{{ url_for('courses') }}" class="navbar-item">
+                                        Courses
+                                    </a>
+                                    <div class="navbar-item">
+                                        <a class="button is-danger is-rounded" href="{{ url_for('sign_out') }}">
+                                            Sign Out
+                                        </a>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </nav>
+                    </div>
+                </div>
+            </div>>
+        </div>
+
+        <!-- Hero content: will be in the middle -->
+        <div class="hero-body">
+            <div class="container">
+                <div class="columns is-centered">
+                    <!-- SIDE MENU -->
+                    <div class="column is-narrow">
+                        <aside class="menu">
+                            <p class="menu-label">Menu</p>
+                            <ul class="menu-list">
+                                <li>
+                                    <a href="{{ url_for('home') }}"
+                                        class="{{ 'is-active' if 'home' in request.path else '' }}"><i
+                                            class="fas fa-project-diagram"></i>&nbsp;Home&trade;</a>
+                                    <ul style="{{ 'display: block;' if 'home' in request.path else 'display: none;' }}">
+                                        <li><a>Members</a></li>
+                                        <li><a>Plugins</a></li>
+                                        <li><a>Add a member</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </aside>
+                    </div>
+                    <!-- CONTENT -->
+                    <div class="column is-7">
+                        <div class="box">
+                            {% block content %}
+                            {% endblock %}
                         </div>
                     </div>
                 </div>
-            </nav>
+            </div>
         </div>
 
-        <div class="hero-body">
-            <div class="container has-text-centered">
-                {% block content %}
-                {% endblock %}
-            </div>
+        <!-- Hero footer: will stick at the bottom -->
+        <div class="hero-foot">
+            <footer style="border-top: 1px solid hsl(0, 0%, 93%); padding-top: 1.7rem;">
+                <div class="container">
+                    <div class="columns is-vcentered is-centered has-text-centered-mobile">
+                        <div class="column is-narrow">
+                            <img src="a" alt="logo">
+                        </div>
+                        <div class="column is-3">
+                            <h5 class="title is-5 has-text-grey-light has-text-weight-normal is-italic">
+                                Arc ha come obiettivo il creare un'ecosistema semplice ma potente per aiutarti a gestire
+                                tutte le tue operazioni.
+                            </h5>
+                        </div>
+                        <div class="column is-4 is-narrow">
+                            &copy; 2020 <a href="https://rgbcraft.com" class="has-text-grey-darker">RGBCraft</a> &
+                            Artemis&trade;.
+                            <br>
+                            <i>Tutti i diritti riservati.</i>
+                        </div>
+                        <div class="column is-narrow">
+                            Sitemap
+                            <ul>
+                                <li><a class="has-text-grey" href="{{ url_for('home') }}">Home</a></li>
+                                <li><a class="has-text-grey" href="{{ url_for('sign_in') }}">Sign In</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </footer>
         </div>
     </section>
 </body>
