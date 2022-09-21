@@ -11,7 +11,7 @@ AWS_COGNITO_USER_POOL_CLIENT_SECRET = (
     "9ig013v4ste04ad0dlpd6vnrr93i29c4lkong18sppi2us8o8gq"
 )
 AWS_COGNITO_REDIRECT_URL = f"""https://{API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/{REDIRECT_URL_LOGIN}"""
-# AWS_COGNITO_REDIRECT_URL = f"""https://localhost:5000/{REDIRECT_URL_LOGIN}"""
+#AWS_COGNITO_REDIRECT_URL = f"""https://localhost:5000/{REDIRECT_URL_LOGIN}"""
 
 
 def get_sign_in_url() -> str:

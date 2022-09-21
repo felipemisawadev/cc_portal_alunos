@@ -8,9 +8,13 @@ from flask import (
     url_for,
 )
 from flask_awscognito import AWSCognitoAuthentication
+
+import secrets
+import boto3
+
+from utils import parse_user_attributes
 from auth_wrapper import auth_required
 import constants as constants
-import secrets
 
 app = Flask(__name__)
 logging.basicConfig()
@@ -31,6 +35,7 @@ app.config[
 app.config["AWS_COGNITO_REDIRECT_URL"] = constants.AWS_COGNITO_REDIRECT_URL
 
 aws_auth = AWSCognitoAuthentication(app)
+client = boto3.client("cognito-idp", constants.AWS_DEFAULT_REGION)
 
 
 @app.route("/")
@@ -46,7 +51,6 @@ def sign_in():
 @app.route("/logged_in")
 def logged_in():
     access_token = aws_auth.get_access_token(request.args)
-    print(aws_auth.claims)
     session["token"] = access_token
     return redirect(url_for("home"))
 
@@ -54,6 +58,8 @@ def logged_in():
 @app.route("/home")
 @auth_required(aws_auth)
 def home():
+    user = parse_user_attributes(client.get_user(AccessToken=session["token"]))
+    session["username"] = user["name"]
     return render_template("home.html")
 
 
