@@ -1,8 +1,15 @@
 import logging
-from flask import Flask, render_template, redirect, request, session, url_for
+from flask import (
+    Flask,
+    render_template,
+    redirect,
+    request,
+    session,
+    url_for,
+)
 from flask_awscognito import AWSCognitoAuthentication
-from auth_wrapper import auth_required
-import constants as constants
+from app.auth_wrapper import auth_required
+import app.constants as constants
 import secrets
 
 app = Flask(__name__)
@@ -28,7 +35,6 @@ aws_auth = AWSCognitoAuthentication(app)
 
 @app.route("/")
 def index(event=None, context=None):
-    logger.debug("Lambda function invoked index()")
     return render_template("index.html")
 
 
@@ -40,30 +46,32 @@ def sign_in():
 @app.route("/logged_in")
 def logged_in():
     access_token = aws_auth.get_access_token(request.args)
+    print(aws_auth.claims)
     session["token"] = access_token
     return redirect(url_for("home"))
 
 
 @app.route("/home")
-@auth_required
+@auth_required(aws_auth)
 def home():
+    print(aws_auth.claims)
     return render_template("home.html")
 
 
 @app.route("/profile")
-@auth_required
+@auth_required(aws_auth)
 def profile():
-    return "PROFILE PAGE"
+    return render_template("profile.html")
 
 
 @app.route("/courses")
-@auth_required
+@auth_required(aws_auth)
 def courses():
-    return "COURSES PAGE"
+    return render_template("courses.html")
 
 
 @app.route("/sign_out")
-@auth_required
+@auth_required(aws_auth)
 def sign_out():
     session.pop("token", None)
     return redirect(url_for("index"))
@@ -72,4 +80,4 @@ def sign_out():
 # For local runs, set flask to use debug mode
 if __name__ == "__main__":
     logger.setLevel(logging.DEBUG)
-    app.run(debug=True)
+    app.run(debug=True, ssl_context="adhoc")

@@ -39,10 +39,10 @@
                                         Home
                                     </a>
                                     <a href="{{ url_for('profile') }}" class="navbar-item">
-                                        Profile
+                                        Dados Pessoais
                                     </a>
                                     <a href="{{ url_for('courses') }}" class="navbar-item">
-                                        Courses
+                                        Cursos
                                     </a>
                                     <div class="navbar-item">
                                         <a class="button is-danger is-rounded" href="{{ url_for('sign_out') }}">
@@ -63,6 +63,7 @@
             <div class="container">
                 <div class="columns is-centered">
                     <!-- SIDE MENU -->
+                    {% if session.token %}
                     <div class="column is-narrow">
                         <aside class="menu">
                             <p class="menu-label">Menu</p>
@@ -70,16 +71,22 @@
                                 <li>
                                     <a href="{{ url_for('home') }}"
                                         class="{{ 'is-active' if 'home' in request.path else '' }}"><i
-                                            class="fas fa-project-diagram"></i>&nbsp;Home&trade;</a>
-                                    <ul style="{{ 'display: block;' if 'home' in request.path else 'display: none;' }}">
-                                        <li><a>Members</a></li>
-                                        <li><a>Plugins</a></li>
-                                        <li><a>Add a member</a></li>
-                                    </ul>
+                                            class="fas fa-project-diagram"></i>Home</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('profile') }}"
+                                        class="{{ 'is-active' if 'profile' in request.path else '' }}"><i
+                                            class="fas fa-project-diagram"></i>Dados Pessoais</a>
+                                </li>
+                                <li>
+                                    <a href="{{ url_for('courses') }}"
+                                        class="{{ 'is-active' if 'courses' in request.path else '' }}"><i
+                                            class="fas fa-project-diagram"></i>Cursos</a>
                                 </li>
                             </ul>
                         </aside>
                     </div>
+                    {% endif %}
                     <!-- CONTENT -->
                     <div class="column is-7">
                         <div class="box">
@@ -101,22 +108,13 @@
                         </div>
                         <div class="column is-3">
                             <h5 class="title is-5 has-text-grey-light has-text-weight-normal is-italic">
-                                Arc ha come obiettivo il creare un'ecosistema semplice ma potente per aiutarti a gestire
-                                tutte le tue operazioni.
+                                This is a footer text
                             </h5>
                         </div>
                         <div class="column is-4 is-narrow">
-                            &copy; 2020 <a href="https://rgbcraft.com" class="has-text-grey-darker">RGBCraft</a> &
-                            Artemis&trade;.
+                            &copy; 2020 Copyright
                             <br>
-                            <i>Tutti i diritti riservati.</i>
-                        </div>
-                        <div class="column is-narrow">
-                            Sitemap
-                            <ul>
-                                <li><a class="has-text-grey" href="{{ url_for('home') }}">Home</a></li>
-                                <li><a class="has-text-grey" href="{{ url_for('sign_in') }}">Sign In</a></li>
-                            </ul>
+                            <i>All rights reserved.</i>
                         </div>
                     </div>
                 </div>
