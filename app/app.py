@@ -54,7 +54,6 @@ def logged_in():
 @app.route("/home")
 @auth_required(aws_auth)
 def home():
-    print(aws_auth.claims)
     return render_template("home.html")
 
 
