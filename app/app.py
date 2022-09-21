@@ -8,8 +8,8 @@ from flask import (
     url_for,
 )
 from flask_awscognito import AWSCognitoAuthentication
-from app.auth_wrapper import auth_required
-import app.constants as constants
+from auth_wrapper import auth_required
+import constants as constants
 import secrets
 
 app = Flask(__name__)
