@@ -1,16 +1,11 @@
 import logging
-from flask import (
-    Flask,
-    render_template,
-    redirect,
-    request,
-    session,
-    url_for,
-)
+from flask import Flask, render_template, redirect, request, session, url_for, flash
 from flask_awscognito import AWSCognitoAuthentication
 
 import secrets
 import boto3
+import re
+import datetime as dt
 
 from utils import parse_user_attributes
 from auth_wrapper import auth_required
@@ -67,6 +62,27 @@ def home():
 @auth_required(aws_auth)
 def profile():
     return render_template("profile.html")
+
+
+@app.route("/update", methods=["POST"])
+@auth_required(aws_auth)
+def update():
+    name = request.form.get("name")
+    relationship = request.form.get("relationship")
+    entry_year = request.form.get("entry_year")
+    accept = "accept" in request.form
+    if not accept:
+        flash("Por favor, aceite os termos e condições")
+        return redirect(url_for("profile"))
+
+    # test if year is in range 1900 - 2999 and less than current year
+    if (not re.match("^(19|20)\d{2}$", entry_year)) or (
+        int(entry_year) > dt.date.today().year
+    ):
+        flash("Ano inválido")
+        return redirect(url_for("profile"))
+
+    return f"{name=}, {relationship=}, {entry_year=}, {accept=}"
 
 
 @app.route("/courses")

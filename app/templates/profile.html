@@ -2,11 +2,53 @@
 
 {% block content %}
 <section class="section">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    <div class="notification is-danger">
+        {{ messages[0] }}
+    </div>
+    {% endif %}
+    {% endwith %}
     <h1 class="title">
-        Dados Pessoais
+        {{ session.username }}
     </h1>
     <p class="subtitle">
-        Essa página vai servir para coletar <strong>dados</strong>!
+    <form method="POST" action="{{ url_for('update') }}">
+
+        <div class="field">
+            <label class="label">Relacionamento com a Poli</label>
+            <div class="control">
+                <div class="select">
+                    <select name="relationship">
+                        <option>Aluno graduação</option>
+                        <option>Aluno pós-graduação</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Ano de ingresso</label>
+            <div class="control">
+                <input class="input" type="text" placeholder="e.g. 2022" name="entry_year">
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="control">
+                <label class="checkbox">
+                    <input type="checkbox" name="accept">
+                    Eu aceito os <a href="#">termos e condições</a>
+                </label>
+            </div>
+        </div>
+
+        <div class="field is-grouped">
+            <div class="control">
+                <button class="button is-link">Atualizar</button>
+            </div>
+        </div>
+    </form>
     </p>
 </section>
 {% endblock %}
