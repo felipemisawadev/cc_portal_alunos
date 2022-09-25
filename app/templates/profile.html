@@ -20,8 +20,11 @@
             <div class="control">
                 <div class="select">
                     <select name="relationship">
-                        <option>Aluno graduação</option>
-                        <option>Aluno pós-graduação</option>
+                        <option selected="{{ 'selected' if session.user_relationship == 'Aluno graduação' else '' }}">
+                            Aluno graduação</option>
+                        <option
+                            selected="{{ 'selected' if session.user_relationship == 'Aluno pós-graduação' else '' }}">
+                            Aluno pós-graduação</option>
                     </select>
                 </div>
             </div>
@@ -30,7 +33,31 @@
         <div class="field">
             <label class="label">Ano de ingresso</label>
             <div class="control">
-                <input class="input" type="text" placeholder="e.g. 2022" name="entry_year">
+                <input class="input" type="text" placeholder="e.g. 2022" name="entry_year"
+                    value="{{ session.user_entry_year if session.user_entry_year else '' }}">
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">LinkedIn</label>
+            <div class="field has-addons">
+                <p class="control">
+                    <a class="button is-static">
+                        https://www.linkedin.com/in/
+                    </a>
+                </p>
+                <p class="control">
+                    <input class="input" type="text" placeholder="name-id" name="linkedin"
+                        value="{{ session.user_linkedin if session.user_linkedin else '' }}">
+                </p>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Whatsapp (com DDI)</label>
+            <div class="control">
+                <input class="input" type="text" placeholder="(+55)(11)91234-5678" name="whatsapp"
+                    value="{{ session.user_whatsapp if session.user_whatsapp else '' }}">
             </div>
         </div>
 
@@ -49,6 +76,9 @@
             </div>
         </div>
     </form>
+    <div>
+        Campos marcados com * são obrigatórios
+    </div>
     </p>
 </section>
 {% endblock %}

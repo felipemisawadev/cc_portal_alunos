@@ -31,6 +31,8 @@ app.config["AWS_COGNITO_REDIRECT_URL"] = constants.AWS_COGNITO_REDIRECT_URL
 
 aws_auth = AWSCognitoAuthentication(app)
 client = boto3.client("cognito-idp", constants.AWS_DEFAULT_REGION)
+dynamodb = boto3.resource("dynamodb", constants.AWS_DEFAULT_REGION)
+students_table = dynamodb.Table("alunos")
 
 
 @app.route("/")
@@ -54,6 +56,7 @@ def logged_in():
 @auth_required(aws_auth)
 def home():
     user = parse_user_attributes(client.get_user(AccessToken=session["token"]))
+    session["userid"] = user["sub"]
     session["username"] = user["name"]
     return render_template("home.html")
 
@@ -61,15 +64,24 @@ def home():
 @app.route("/profile")
 @auth_required(aws_auth)
 def profile():
+    # get user data from dynamodb if available
+    response = students_table.get_item(Key={"id": session["userid"]})
+    if response:
+        item = response.get("Item", None)
+        session["user_relationship"] = item.get("relationship", None)
+        session["user_entry_year"] = item.get("entry_year", None)
+        session["user_linkedin"] = item.get("linkedin", None)
+        session["user_whatsapp"] = item.get("whatsapp", None)
     return render_template("profile.html")
 
 
 @app.route("/update", methods=["POST"])
 @auth_required(aws_auth)
 def update():
-    name = request.form.get("name")
     relationship = request.form.get("relationship")
     entry_year = request.form.get("entry_year")
+    linkedin = request.form.get("linkedin")
+    whatsapp = request.form.get("whatsapp")
     accept = "accept" in request.form
     if not accept:
         flash("Por favor, aceite os termos e condições")
@@ -82,7 +94,35 @@ def update():
         flash("Ano inválido")
         return redirect(url_for("profile"))
 
-    return f"{name=}, {relationship=}, {entry_year=}, {accept=}"
+    entry_year = int(entry_year)
+
+    # sanitize whatsapp number leaving numbers only
+    whatsapp = re.sub("\D", "", whatsapp)
+    # check if number has enough digits
+    if len(whatsapp) < 12:
+        flash("Whatsapp inválido")
+        return redirect(url_for("profile"))
+
+    whatsapp = f"+{whatsapp}"
+
+    response = students_table.put_item(
+        Item={
+            "id": session["userid"],
+            "relationship": relationship,
+            "entry_year": entry_year,
+            "linkedin": linkedin,
+            "whatsapp": whatsapp,
+        }
+    )
+
+    status_code = response["ResponseMetadata"]["HTTPStatusCode"]
+
+    if status_code == 200:
+        flash("Dados atualizados!")
+        return redirect(url_for("profile"))
+    else:
+        flash("Erro na atualização, por favor tente novamente")
+        return redirect(url_for("profile"))
 
 
 @app.route("/courses")
