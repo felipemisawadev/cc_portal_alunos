@@ -12,12 +12,3 @@ AWS_COGNITO_USER_POOL_CLIENT_SECRET = (
 )
 AWS_COGNITO_REDIRECT_URL = f"""https://{API_GATEWAY_ID}.execute-api.us-east-1.amazonaws.com/dev/{REDIRECT_URL_LOGIN}"""
 # AWS_COGNITO_REDIRECT_URL = f"""https://localhost:5000/{REDIRECT_URL_LOGIN}"""
-
-
-def get_sign_in_url() -> str:
-    return (
-        f"""https://{DOMAIN_NAME}.auth.us-east-1.amazoncognito.com/"""
-        + f"""login?client_id={AWS_COGNITO_USER_POOL_CLIENT_ID}"""
-        + """&response_type=token&scope=aws.cognito.signin.user.admin+email+openid+phone+profile"""
-        + f"""&redirect_uri={AWS_COGNITO_REDIRECT_URL}"""
-    )
